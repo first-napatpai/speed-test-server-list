@@ -11,6 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
+        /* --- FIXED: Force vertical scrollbar to prevent page jump --- */
+        /* This ensures the page width is always consistent, */
+        /* even if one page's content is shorter than the screen. */
+        html {
+            overflow-y: scroll;
+        }
+
         /* UPDATED: Use Source Code Pro as the default font */
         body {
             font-family: 'Source Code Pro', monospace;
