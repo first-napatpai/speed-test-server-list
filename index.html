@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Keep scrollbar always visible to avoid horizontal layout shift */
+        /* Keep scrollbar always visible to avoid layout shift */
         html {
             overflow-y: scroll;
         }
@@ -75,12 +75,11 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- Main container -->
-    <!-- NEW: responsive padding and height -->
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
-
-        <!-- Window chrome header -->
-        <div class="h-10 bg-gray-100 flex items-center px-3 sm:px-4 border-b border-gray-200 text-xs sm:text-sm">
+    <!-- "Terminal bar" header section -->
+    <!-- NEW: it's now outside the white card, and allowed to be wider on big screens -->
+    <div class="mx-auto w-full max-w-6xl sm:rounded-t-lg sm:overflow-hidden sm:shadow-md sm:border sm:border-b-0 sm:border-gray-200 bg-white sm:bg-gray-100 sm:shadow-none
+                sm:max-w-6xl md:max-w-6xl lg:max-w-7xl 2xl:max-w-[90rem]">
+        <div class="h-10 bg-gray-100 flex items-center px-3 sm:px-4 border border-gray-200 border-b-0 sm:border-b border-gray-200/80 text-xs sm:text-sm">
             <div class="flex space-x-1.5 sm:space-x-2 shrink-0">
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-400 rounded-full border border-red-500"></div>
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-yellow-400 rounded-full border border-yellow-500"></div>
@@ -89,13 +88,17 @@
 
             <!-- shell path text -->
             <div class="flex-1 text-center text-gray-600 truncate px-2">
-                <!-- On very small screens just show "speedtest" -->
                 <span class="sm:hidden">user@speedtest</span>
                 <span class="hidden sm:inline">user@speedtest: ~/data</span>
             </div>
 
             <div class="w-8 sm:w-16"></div>
         </div>
+    </div>
+
+    <!-- Main content card -->
+    <!-- still constrained for readability -->
+    <div class="max-w-6xl mx-auto bg-white rounded-b-lg sm:rounded-t-none sm:rounded-b-lg shadow-md border border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
 
         <!-- Content -->
         <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
@@ -107,7 +110,7 @@
 
             <!-- Search box -->
             <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <!-- Mobile: stack label above input for cramped screens -->
+                <!-- Mobile: stack label above input -->
                 <div class="flex flex-col xs:flex-row xs:items-center gap-2">
                     <label for="search-bar" class="text-gray-500 font-bold text-sm sm:text-md leading-none whitespace-nowrap">
                         [search]$
@@ -330,8 +333,7 @@
         }
 
         /**
-         * Render pagination controls
-         * (Mobile-friendly buttons, wrap allowed)
+         * Render pagination controls (mobile-friendly)
          */
         function renderPaginationControls() {
             paginationList.innerHTML = '';
@@ -485,7 +487,7 @@
             fetch('speedtest_servers.json')
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(\`HTTP error! status: \${response.status}\`);
                     }
                     const lastModified = response.headers.get('Last-Modified');
                     const lastUpdatedElement = document.getElementById('data-last-updated-timestamp');
