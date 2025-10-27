@@ -75,18 +75,21 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- "Terminal bar" header section -->
-    <!-- NEW: it's now outside the white card, and allowed to be wider on big screens -->
-    <div class="mx-auto w-full max-w-6xl sm:rounded-t-lg sm:overflow-hidden sm:shadow-md sm:border sm:border-b-0 sm:border-gray-200 bg-white sm:bg-gray-100 sm:shadow-none
-                sm:max-w-6xl md:max-w-6xl lg:max-w-7xl 2xl:max-w-[90rem]">
-        <div class="h-10 bg-gray-100 flex items-center px-3 sm:px-4 border border-gray-200 border-b-0 sm:border-b border-gray-200/80 text-xs sm:text-sm">
+    <!-- FULL-WIDTH TERMINAL BAR -->
+    <!-- This spans 100% width across the viewport -->
+    <div class="w-full bg-gray-100 border border-gray-200 rounded-t-lg md:rounded-lg md:rounded-b-none shadow-md md:shadow-none md:border-b-0">
+
+        <!-- Inner row is centered but allowed to be very wide -->
+        <div class="max-w-[90rem] mx-auto flex items-center h-10 px-3 sm:px-4 text-xs sm:text-sm">
+
+            <!-- traffic light dots -->
             <div class="flex space-x-1.5 sm:space-x-2 shrink-0">
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-400 rounded-full border border-red-500"></div>
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-yellow-400 rounded-full border border-yellow-500"></div>
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-400 rounded-full border border-green-500"></div>
             </div>
 
-            <!-- shell path text -->
+            <!-- path text -->
             <div class="flex-1 text-center text-gray-600 truncate px-2">
                 <span class="sm:hidden">user@speedtest</span>
                 <span class="hidden sm:inline">user@speedtest: ~/data</span>
@@ -96,11 +99,10 @@
         </div>
     </div>
 
-    <!-- Main content card -->
-    <!-- still constrained for readability -->
-    <div class="max-w-6xl mx-auto bg-white rounded-b-lg sm:rounded-t-none sm:rounded-b-lg shadow-md border border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
+    <!-- CONTENT CARD -->
+    <!-- This is still readable width -->
+    <div class="max-w-6xl mx-auto bg-white rounded-b-lg md:rounded-lg shadow-md border border-gray-200 border-t-0 md:border-t border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
 
-        <!-- Content -->
         <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
 
             <!-- Title -->
@@ -110,7 +112,6 @@
 
             <!-- Search box -->
             <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <!-- Mobile: stack label above input -->
                 <div class="flex flex-col xs:flex-row xs:items-center gap-2">
                     <label for="search-bar" class="text-gray-500 font-bold text-sm sm:text-md leading-none whitespace-nowrap">
                         [search]$
@@ -195,15 +196,14 @@
                         id="pagination-list"
                         class="flex flex-wrap items-center justify-center md:justify-end gap-1 sm:gap-0 md:-space-x-px text-xs sm:text-sm"
                     >
-                        <!-- JS will inject buttons -->
+                        <!-- Pagination buttons go here -->
                     </ul>
                 </nav>
             </div>
 
-        </div> <!-- /content -->
+        </div> <!-- /inner content -->
     </div> <!-- /card -->
 
-    <!-- JS -->
     <script>
         // --- Element References ---
         const searchInput = document.getElementById('search-bar');
@@ -211,6 +211,7 @@
         const resultsInfo = document.getElementById('results-info');
         const paginationList = document.getElementById('pagination-list');
         const recordsPerPageSelect = document.getElementById('records-per-page');
+        const lastUpdatedElement = document.getElementById('data-last-updated-timestamp');
         
         // --- State ---
         let allServerData = [];
@@ -218,9 +219,6 @@
         let currentPage = 1;
         let recordsPerPage = 100;
 
-        /**
-         * Debounce helper
-         */
         function debounce(func, delay = 250) {
             let timeoutId;
             return function(...args) {
@@ -231,9 +229,6 @@
             };
         }
 
-        /**
-         * Build table rows for current slice
-         */
         function renderTable(data) {
             tableBody.innerHTML = '';
 
@@ -250,7 +245,6 @@
             data.forEach(item => {
                 const row = document.createElement('tr');
 
-                // Card mode on mobile, flat row on desktop
                 row.className = [
                     'block md:table-row mb-4 md:mb-0',
                     'border border-gray-200 md:border-b md:border-gray-200',
@@ -293,9 +287,6 @@
             });
         }
 
-        /**
-         * Page numbers with ellipsis
-         */
         function getPaginationNumbers(totalPages, currentPage) {
             const pagesToShow = 5;
             const sideWidth = Math.floor(pagesToShow / 2);
@@ -332,9 +323,6 @@
             return result;
         }
 
-        /**
-         * Render pagination controls (mobile-friendly)
-         */
         function renderPaginationControls() {
             paginationList.innerHTML = '';
 
@@ -360,7 +348,7 @@
             }
             paginationList.appendChild(prevLi);
 
-            // Page numbers
+            // Pages
             const pageNumbers = getPaginationNumbers(totalPages, currentPage);
             pageNumbers.forEach(page => {
                 const pageLi = document.createElement('li');
@@ -411,9 +399,6 @@
             paginationList.appendChild(nextLi);
         }
 
-        /**
-         * "Showing X-Y of Z"
-         */
         function updateResultsInfo() {
             const totalResults = filteredServerData.length;
             const startIndex = (currentPage - 1) * recordsPerPage;
@@ -424,9 +409,6 @@
             resultsInfo.textContent = `Showing ${startNum}-${endNum} of ${totalResults} results.`;
         }
 
-        /**
-         * Page nav with scroll position memory (prevents jump)
-         */
         function goToPage(page) {
             let totalPages = Math.ceil(filteredServerData.length / recordsPerPage);
             if (totalPages === 0) totalPages = 1;
@@ -445,9 +427,6 @@
             }
         }
 
-        /**
-         * Re-render current slice
-         */
         function renderPage() {
             const startIndex = (currentPage - 1) * recordsPerPage;
             const endIndex = startIndex + recordsPerPage;
@@ -459,9 +438,6 @@
             updateResultsInfo();
         }
 
-        /**
-         * Handle search filter
-         */
         function handleSearch() {
             const searchTerm = searchInput.value.toLowerCase();
 
@@ -478,33 +454,44 @@
             renderPage();
         }
 
-        /**
-         * Init
-         */
+        // ---- INIT ----
         document.addEventListener('DOMContentLoaded', () => {
             recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
 
+            // optimistic timestamp if Jenkins placeholder is still there
+            if (
+                lastUpdatedElement &&
+                lastUpdatedElement.innerHTML.includes('<!-- LAST_UPDATED_JENKINS -->')
+            ) {
+                lastUpdatedElement.textContent = new Date().toLocaleString() + " (loading...)";
+            }
+
             fetch('speedtest_servers.json')
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(\`HTTP error! status: \${response.status}\`);
-                    }
+                    // Instead of throwing, handle gracefully
                     const lastModified = response.headers.get('Last-Modified');
-                    const lastUpdatedElement = document.getElementById('data-last-updated-timestamp');
-                    
-                    if (lastUpdatedElement && lastUpdatedElement.innerHTML.includes('<!-- LAST_UPDATED_JENKINS -->')) {
+                    if (
+                        lastUpdatedElement &&
+                        lastUpdatedElement.innerHTML.includes('(loading...)')
+                    ) {
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
                             lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
                         }
                     }
-                    
+
+                    if (!response.ok) {
+                        // return empty data fallback
+                        return [];
+                    }
+
                     return response.json();
                 })
                 .then(data => {
-                    allServerData = data;
-                    filteredServerData = data;
+                    // If we got [], that's fine
+                    allServerData = Array.isArray(data) ? data : [];
+                    filteredServerData = allServerData;
 
                     renderPage();
 
@@ -515,8 +502,15 @@
                         renderPage();
                     });
                 })
-                .catch(error => {
-                    console.error('Error loading server data:', error);
+                .catch(err => {
+                    console.error('Error loading server data:', err);
+
+                    // fallback state so UI still renders and doesn't look frozen
+                    allServerData = [];
+                    filteredServerData = [];
+
+                    renderPage();
+
                     resultsInfo.textContent = 'Error loading data.';
                     tableBody.innerHTML = `
                         <tr>
