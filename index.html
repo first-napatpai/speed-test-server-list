@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speed Test Server Data Search</title>
+    <title>Speed Test Server URL Data Search</title>
     <!-- 1. Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,13 +18,19 @@
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
 
         <!-- Header -->
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Speed Test Server Data Search</h1>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Speed Test Server URL Data Search</h1>
 
         <!-- 2. The Search Bar -->
         <div class="mb-6">
             <label for="search-bar" class="block text-sm font-medium text-gray-700 mb-1">Search by Country, Sponsor, Host, or Location:</label>
             <input type="text" id="search-bar" placeholder="e.g., 'United States', 'Sparklight', 'siouxcity'..."
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+        </div>
+
+        <!-- Last Updated Timestamp -->
+        <div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
+            Last updated: <span id="last-updated"><!-- LAST_UPDATED_JENKINS --></span>
+            <!-- Jenkins can replace this comment: -->
         </div>
 
         <!-- 3. The Data Table Container -->
@@ -124,6 +130,19 @@
                         // Handle file not found or other HTTP errors
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
+
+                    // Get the 'Last-Modified' header
+                    const lastModified = response.headers.get('Last-Modified');
+                    
+                    // Find the timestamp element
+                    const lastUpdatedElement = document.getElementById('last-updated');
+                    if (lastUpdatedElement && lastModified) {
+                        lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
+                    } else if (lastUpdatedElement) {
+                        // Fallback if header is not present (e.g., local testing)
+                        lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
+                    }
+                    
                     return response.json();
                 })
                 .then(data => {
@@ -151,3 +170,5 @@
     </script>
 </body>
 </html>
+
+
