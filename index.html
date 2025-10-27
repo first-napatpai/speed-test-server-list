@@ -91,7 +91,7 @@
             </div>
 
             <!-- Last Updated Timestamp --><div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
-                Last updated: <span id="data-last-updated-timestamp">10/27/2025, 07:07:05 PM GMT+7</span>
+                Last updated: <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
             </div>
 
             <!-- 4. Top Controls: Show X entries and Results Info --><div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -243,6 +243,7 @@
 
         /**
          * Updates the pagination controls
+         * FIXED: Reconstructed this function
          */
         function renderPaginationControls() {
             paginationList.innerHTML = ''; 
@@ -254,7 +255,6 @@
             const prevLi = document.createElement('li');
             const isDisabledPrev = currentPage === 1;
             if (isDisabledPrev) prevLi.classList.add('disabled');
-            // UPDATED: Light theme styles
             prevLi.innerHTML = `
                 <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
                     Previous
@@ -265,6 +265,49 @@
             }
             paginationList.appendChild(prevLi);
  
+            // 2. Create Page Number buttons
+            const pageNumbers = getPaginationNumbers(totalPages, currentPage);
+            pageNumbers.forEach(page => {
+                const pageLi = document.createElement('li');
+                if (page === '...') {
+                    pageLi.innerHTML = `<span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">...</span>`;
+                } else {
+                    const isActive = page === currentPage;
+                    pageLi.innerHTML = `
+                        <button class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
+                            ${page}
+                        </button>
+                    `;
+                    if (!isActive) {
+                        pageLi.querySelector('button').addEventListener('click', () => goToPage(page));
+                    }
+                }
+                paginationList.appendChild(pageLi);
+            });
+
+            // 3. Create "Next" button
+            const nextLi = document.createElement('li');
+            const isDisabledNext = currentPage === totalPages;
+            if (isDisabledNext) nextLi.classList.add('disabled');
+            nextLi.innerHTML = `
+                <button class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                    Next
+                </button>
+            `;
+            if (!isDisabledNext) {
+                nextLi.querySelector('button').addEventListener('click', () => goToPage(currentPage + 1));
+            }
+            paginationList.appendChild(nextLi);
+        }
+
+        /**
+         * Updates the "Showing X-Y of Z results" text
+         * FIXED: Reconstructed this function
+         */
+        function updateResultsInfo() {
+            const totalResults = filteredServerData.length;
+            const startIndex = (currentPage - 1) * recordsPerPage; // This was missing
+            
             const startNum = totalResults === 0 ? 0 : startIndex + 1;
             const endNum = Math.min(startIndex + recordsPerPage, totalResults);
 
@@ -319,6 +362,7 @@
         }
 
         // --- Event Listeners ---
+        // FIXED: Reconstructed this function
         document.addEventListener('DOMContentLoaded', () => {
             recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
 
@@ -334,15 +378,16 @@
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
-                    const isActive = page === currentPage;
-                    // UPDATED: Light theme styles for active and inactive
-                    // FIXED: Corrected 'classf' to 'class'
-                    pageLi.innerHTML = `
-                        <button class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
-                            ${page}
-                        </button>
-                    `;
-                    if (!isActive) {
+                            // This was the broken part. It's now fixed.
+                            lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
+                        }
+                    }
+                    
+                    return response.json();
+                })
+                .then(data => {
+                    allServerData = data;
+                    filteredServerData = data; 
                     
                     renderPage(); 
 
@@ -356,7 +401,6 @@
                 .catch(error => {
                     console.error('Error loading server data:', error);
                     resultsInfo.textContent = 'Error loading data.';
-                    // UPDATED: Error text color for light theme
                     tableBody.innerHTML = `<tr>
                         <td class="block md:table-cell px-6 py-4 text-sm text-red-600 text-center" colspan="4">
                             <strong>Error:</strong> Could not load 'speedtest_servers.json'.<br>
@@ -369,5 +413,4 @@
     </script>
 </body>
 </html>
-
 
