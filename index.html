@@ -69,12 +69,26 @@
             Last updated: <span id="data-last-updated-timestamp">10/27/2025, 07:07:05 PM GMT+7</span>
         </div>
 
-        <!-- Results Info -->
-        <div class="mb-4 text-sm text-gray-600" id="results-info">
-            Loading results...
+        <!-- 4. Top Controls: Show X entries and Results Info -->
+        <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Left Side: Show X entries -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 w-full sm:w-auto">
+                <label for="records-per-page" class="whitespace-nowrap">Show</label>
+                <select id="records-per-page" class="w-20 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100" selected>100</option>
+                    <option value="250">250</option>
+                </select>
+                <span class="whitespace-nowrap">entries</span>
+            </div>
+            
+            <!-- Right Side: Results Info text -->
+            <div id="results-info" class="text-sm text-gray-600 text-center sm:text-right w-full sm:w-auto">Loading results...</div>
         </div>
 
-        <!-- 3. The Data Table Container -->
+        <!-- 5. The Data Table Container -->
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="hidden md:table-header-group bg-gray-50">
@@ -93,10 +107,9 @@
             </table>
         </div>
 
-        <!-- 4. Pagination Controls -->
-        <div class="mt-6 flex flex-col md:flex-row items-center justify-between">
-            <!-- This will be populated by JS -->
-            <nav aria-label="Pagination" class="w-full">
+        <!-- 6. Bottom Pagination Controls -->
+        <div class="mt-6 flex items-center justify-center md:justify-end">
+            <nav aria-label="Pagination" class="w-full md:w-auto">
                 <ul id="pagination-list" class="flex items-center justify-center md:justify-end -space-x-px text-sm">
                     <!-- Pagination items will be generated here -->
                 </ul>
@@ -105,20 +118,22 @@
 
     </div>
 
-    <!-- 5. JavaScript for Data and Search -->
+    <!-- 7. JavaScript for Data and Search -->
     <script>
         // --- Element References ---
         const searchInput = document.getElementById('search-bar');
         const tableBody = document.getElementById('results-body');
         const resultsInfo = document.getElementById('results-info');
-        // --- NEW: Reference to the pagination list ---
         const paginationList = document.getElementById('pagination-list');
+        // --- NEW: Reference to the records per page select ---
+        const recordsPerPageSelect = document.getElementById('records-per-page');
         
         // --- State Variables ---
         let allServerData = []; // Holds all data from JSON
         let filteredServerData = []; // Holds data after search filter
         let currentPage = 1;
-        const recordsPerPage = 100;
+        // --- CHANGED: Now a 'let' and initialized from the select element ---
+        let recordsPerPage = 100; // Default, will be updated on DOMContentLoaded
 
         /**
          * Debounce function (no changes)
@@ -135,7 +150,7 @@
 
         /**
          * Renders the table rows for a *specific page* of data.
-         * (No changes from previous version)
+         * (No changes)
          */
         function renderTable(data) {
             tableBody.innerHTML = ''; // Clear the existing table body
@@ -171,8 +186,8 @@
         }
 
         /**
-         * --- NEW: Creates the array of page numbers and ellipses ---
-         * This determines what page numbers to show in the control.
+         * Creates the array of page numbers and ellipses
+         * (No changes)
          */
         function getPaginationNumbers(totalPages, currentPage) {
             const pagesToShow = 5; // How many page numbers to show (e.g., 1, 2, 3, 4, 5 or ... 8, 9, 10, 11, 12 ...)
@@ -210,7 +225,8 @@
         }
 
         /**
-         * --- REWRITTEN: Updates the pagination controls (buttons and page info) ---
+         * Updates the pagination controls
+         * (No changes, it will naturally use the 'recordsPerPage' variable)
          */
         function renderPaginationControls() {
             paginationList.innerHTML = ''; // Clear existing controls
@@ -269,7 +285,7 @@
 
         /**
          * Updates the "Showing X-Y of Z results" text
-         * (No changes from previous version)
+         * (No changes, it will naturally use the 'recordsPerPage' variable)
          */
         function updateResultsInfo() {
             const totalResults = filteredServerData.length;
@@ -282,10 +298,13 @@
         }
 
         /**
-         * --- NEW: Helper function to navigate pages ---
+         * Helper function to navigate pages
+         * (No changes, it will naturally use the 'recordsPerPage' variable)
          */
         function goToPage(page) {
-            const totalPages = Math.ceil(filteredServerData.length / recordsPerPage);
+            let totalPages = Math.ceil(filteredServerData.length / recordsPerPage);
+            if (totalPages === 0) totalPages = 1;
+
             if (page >= 1 && page <= totalPages) {
                 currentPage = page;
                 renderPage();
@@ -294,7 +313,7 @@
 
         /**
          * Slices the filtered data and renders the table and controls.
-         * (No changes from previous version)
+         * (No changes, it will naturally use the 'recordsPerPage' variable)
          */
         function renderPage() {
             const startIndex = (currentPage - 1) * recordsPerPage;
@@ -310,7 +329,7 @@
 
         /**
          * Filters all data based on the search term and renders the first page.
-         * (No changes from previous version)
+         * (No changes)
          */
         function handleSearch() {
             const searchTerm = searchInput.value.toLowerCase();
@@ -330,6 +349,9 @@
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
+            // --- NEW: Set records per page from the select element's value ---
+            recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
+
             fetch('speedtest_servers.json')
                 .then(response => {
                     if (!response.ok) {
@@ -357,8 +379,12 @@
                     // Attach search listener
                     searchInput.addEventListener('input', debounce(handleSearch, 300));
 
-                    // --- REMOVED: Old pagination listeners are no longer needed
-                    // as they are created dynamically in renderPaginationControls
+                    // --- NEW: Add listener for records per page change ---
+                    recordsPerPageSelect.addEventListener('change', () => {
+                        recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
+                        currentPage = 1; // Reset to page 1
+                        renderPage();
+                    });
                 })
                 .catch(error => {
                     console.error('Error loading server data:', error);
