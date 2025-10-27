@@ -61,7 +61,8 @@
 
         <!-- Last Updated Timestamp -->
         <div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
-            Last updated: <span id="last-updated">10/27/2025, 6:40:55 PM</span>
+            <!-- CHANGED: Updated the id to be more unique -->
+            Last updated: <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
         </div>
 
         <!-- 3. The Data Table Container -->
@@ -188,7 +189,9 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const lastModified = response.headers.get('Last-Modified');
-                    const lastUpdatedElement = document.getElementById('last-updated');
+                    
+                    // CHANGED: Using the new id here
+                    const lastUpdatedElement = document.getElementById('data-last-updated-timestamp');
                     
                     if (lastUpdatedElement && lastModified) {
                         lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
