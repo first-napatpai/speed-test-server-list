@@ -6,14 +6,46 @@
     <title>Speed Test Server URL Data Search</title>
     <!-- 1. Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use the Inter font family for a cleaner look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* A little extra style for table row hover */
-        tbody tr:hover {
-            background-color: #f9fafb; /* Tailwind 'gray-50' */
+        /* Use Inter as the default font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* This is the magic for the responsive "card" layout on mobile.
+         It targets screens *smaller* than the 'md' breakpoint (768px).
+        */
+        @media (max-width: 767px) {
+            /* This pseudo-element reads the 'data-label' attribute from the <td>
+             and displays it as a label on the left side of the "card".
+            */
+            tbody td[data-label]::before {
+                content: attr(data-label); /* Get text from data-label attribute */
+                position: absolute;
+                left: 0;
+                width: 6.5rem; /* 104px */
+                padding-left: 1.5rem; /* Corresponds to px-6 */
+                padding-right: 0.5rem;
+                text-align: left;
+                font-weight: 600; /* semibold */
+                color: #4b5563; /* gray-600 */
+            }
+        }
+
+        /* A little extra style for table row hover on desktop */
+        @media (min-width: 768px) {
+            tbody tr:hover {
+                background-color: #f9fafb; /* Tailwind 'gray-50' */
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans p-4 md:p-8">
+<body class="bg-gray-100 p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
 
@@ -30,13 +62,17 @@
         <!-- Last Updated Timestamp -->
         <div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
             Last updated: <span id="last-updated"><!-- LAST_UPDATED_JENKINS --></span>
-            <!-- Jenkins can replace this comment: -->
         </div>
 
         <!-- 3. The Data Table Container -->
+        <!-- This container still handles scrolling on medium-sized screens if needed -->
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="w-full">
+                <!-- 
+                  The table header is hidden on mobile ('hidden')
+                  and shown from 'md' screens up ('md:table-header-group')
+                -->
+                <thead class="hidden md:table-header-group bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sponsor</th>
@@ -44,11 +80,17 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Host</th>
                     </tr>
                 </thead>
-                <!-- Data will be injected here by JavaScript -->
-                <tbody id="results-body" class="bg-white divide-y divide-gray-200">
-                    <!-- Example row (will be replaced) -->
+                <!-- 
+                  The table body is set to 'block' on mobile, 
+                  and 'table-row-group' on desktop
+                -->
+                <tbody id="results-body" class="block md:table-row-group divide-y divide-gray-200">
+                    <!-- 
+                      Updated "Loading" row to be a single block,
+                      which works better with the mobile layout.
+                    -->
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" colspan="4">Loading data...</td>
+                        <td class="block md:table-cell px-6 py-4 text-center text-sm text-gray-500" colspan="4">Loading data...</td>
                     </tr>
                 </tbody>
             </table>
@@ -58,10 +100,6 @@
 
     <!-- 4. JavaScript for Data and Search -->
     <script>
-        // --- IMPORTANT ---
-        // This script now loads 'speedtest_servers.json' from the same repository.
-        // Make sure your JSON file is in the root of your GitHub Pages repository.
-        
         // Get references to the HTML elements
         const searchInput = document.getElementById('search-bar');
         const tableBody = document.getElementById('results-body');
@@ -79,8 +117,9 @@
 
             // If no data matches, show a "not found" message
             if (data.length === 0) {
+                // Updated "No results" row to work with mobile layout
                 tableBody.innerHTML = `<tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="4">
+                    <td class="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="4">
                         No results found.
                     </td>
                 </tr>`;
@@ -90,11 +129,31 @@
             // Loop through the data and create a table row for each item
             data.forEach(item => {
                 const row = document.createElement('tr');
+                
+                // --- CHANGE: Added classes to the <tr> ---
+                // On mobile ('block'), it's a card with margin, border, and shadow.
+                // On desktop ('md:table-row'), it's a normal table row.
+                row.className = 'block md:table-row mb-4 md:mb-0 border border-gray-200 md:border-b md:border-gray-200 rounded-lg md:rounded-none shadow-md md:shadow-none overflow-hidden md:overflow-auto';
+
+                // --- CHANGE: Updated <td> elements ---
+                // 1. Removed 'whitespace-nowrap' and added 'whitespace-normal break-words' to allow text wrapping.
+                // 2. Added 'data-label' attribute for the mobile CSS pseudo-element.
+                // 3. Added responsive classes to stack cells ('block md:table-cell'),
+                //    align text ('text-right md:text-left'), and manage padding
+                //    for the label ('pl-28 md:pl-6').
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.country || ''}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.sponsor || ''}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.name || ''}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.host || ''}</td>
+                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-900" data-label="Country">
+                        ${item.country || ''}
+                    </td>
+                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-900" data-label="Sponsor">
+                        ${item.sponsor || ''}
+                    </td>
+                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-500" data-label="Location">
+                        ${item.name || ''}
+                    </td>
+                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-500" data-label="Host">
+                        ${item.host || ''}
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -106,7 +165,6 @@
         function handleSearch() {
             const searchTerm = searchInput.value.toLowerCase();
 
-            // Use allServerData (from the file) instead of sampleData
             const filteredData = allServerData.filter(item => {
                 // Check if the search term is in any of the required fields
                 const countryMatch = (item.country || '').toLowerCase().includes(searchTerm);
@@ -127,41 +185,31 @@
             fetch('speedtest_servers.json')
                 .then(response => {
                     if (!response.ok) {
-                        // Handle file not found or other HTTP errors
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-
-                    // Get the 'Last-Modified' header
                     const lastModified = response.headers.get('Last-Modified');
-                    
-                    // Find the timestamp element
                     const lastUpdatedElement = document.getElementById('last-updated');
+                    
                     if (lastUpdatedElement && lastModified) {
                         lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                     } else if (lastUpdatedElement) {
-                        // Fallback if header is not present (e.g., local testing)
                         lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
                     }
                     
                     return response.json();
                 })
                 .then(data => {
-                    // Store the loaded data in our variable
                     allServerData = data;
-                    
-                    // Initial render: Display all data now that it's loaded
                     renderTable(allServerData);
-
-                    // Now that data is loaded, attach the search event listener
                     searchInput.addEventListener('input', handleSearch);
                 })
                 .catch(error => {
-                    // Display an error message in the table if the file fails to load
                     console.error('Error loading server data:', error);
+                    // Updated error message row
                     tableBody.innerHTML = `<tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-center" colspan="4">
+                        <td class="block md:table-cell px-6 py-4 text-sm text-red-600 text-center" colspan="4">
                             <strong>Error:</strong> Could not load 'speedtest_servers.json'.<br>
-                            Please make sure the file exists in the repository root and is valid JSON.
+                            Please make sure the file exists and is valid JSON.
                         </td>
                     </tr>`;
                 });
@@ -170,5 +218,3 @@
     </script>
 </body>
 </html>
-
-
