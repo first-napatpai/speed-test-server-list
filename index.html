@@ -109,6 +109,21 @@
         let allServerData = [];
 
         /**
+         * Debounce function to limit how often a function can run.
+         * @param {Function} func - The function to debounce.
+         * @param {number} delay - The delay in milliseconds.
+         */
+        function debounce(func, delay = 250) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        /**
          * Renders the filtered data into the table.
          * @param {Array} data - The array of data objects to render.
          */
@@ -193,10 +208,14 @@
                     // CHANGED: Using the new id here
                     const lastUpdatedElement = document.getElementById('data-last-updated-timestamp');
                     
-                    if (lastUpdatedElement && lastModified) {
-                        lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
-                    } else if (lastUpdatedElement) {
-                        lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
+                    // This logic now runs *only if* the Jenkins placeholder is still present.
+                    // If Jenkins has already filled in the time, this block will be skipped.
+                    if (lastUpdatedElement && lastUpdatedElement.innerHTML.includes('<!-- LAST_UPDATED_JENKINS -->')) {
+                        if (lastModified) {
+                            lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
+                        } else {
+                            lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
+                        }
                     }
                     
                     return response.json();
@@ -204,7 +223,11 @@
                 .then(data => {
                     allServerData = data;
                     renderTable(allServerData);
-                    searchInput.addEventListener('input', handleSearch);
+
+                    // CHANGED: Wrapped the event listener in a debounce function
+                    // This waits 300ms after the user stops typing to perform the search,
+                    // making the input feel much smoother.
+                    searchInput.addEventListener('input', debounce(handleSearch, 300));
                 })
                 .catch(error => {
                     console.error('Error loading server data:', error);
@@ -221,3 +244,4 @@
     </script>
 </body>
 </html>
+
