@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Keep scrollbar always visible to avoid layout shift */
         html {
             overflow-y: scroll;
         }
@@ -24,7 +23,7 @@
             background-color: #f3f4f6; /* bg-gray-100 */
         }
 
-        /* Mobile "data-label: Country / Host / ..." before values */
+        /* Mobile label prefix for stacked rows */
         @media (max-width: 767px) {
             tbody td[data-label]::before {
                 content: attr(data-label);
@@ -36,8 +35,8 @@
                 text-align: left;
                 font-weight: 600;
                 color: #4b5563; /* text-gray-600 */
-                font-size: 0.75rem; /* text-xs */
-                line-height: 1rem;  /* leading-tight */
+                font-size: 0.75rem;
+                line-height: 1rem;
             }
         }
 
@@ -48,7 +47,6 @@
             }
         }
 
-        /* Disabled pagination buttons */
         li.disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -58,12 +56,10 @@
             cursor: not-allowed;
         }
 
-        /* Search placeholder */
         #search-bar::placeholder {
             color: #9ca3af; /* text-gray-400 */
         }
 
-        /* Hide horizontal scrollbar bar chrome */
         .table-scroll-container::-webkit-scrollbar {
             display: none;
         }
@@ -75,14 +71,15 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- FULL-WIDTH TERMINAL BAR -->
-    <!-- This spans 100% width across the viewport -->
-    <div class="w-full bg-gray-100 border border-gray-200 rounded-t-lg md:rounded-lg md:rounded-b-none shadow-md md:shadow-none md:border-b-0">
+    <!-- OUTER WRAPPER FOR BOTH HEADER + CONTENT -->
+    <!-- We give both parts the same responsive max-width so they align visually -->
+    <div class="mx-auto w-full
+                max-w-6xl lg:max-w-7xl 2xl:max-w-[90rem]">
 
-        <!-- Inner row is centered but allowed to be very wide -->
-        <div class="max-w-[90rem] mx-auto flex items-center h-10 px-3 sm:px-4 text-xs sm:text-sm">
+        <!-- TERMINAL BAR (TOP SECTION) -->
+        <div class="bg-gray-100 border border-gray-200 border-b-0 rounded-t-lg shadow-md flex items-center h-10 px-3 sm:px-4 text-xs sm:text-sm">
 
-            <!-- traffic light dots -->
+            <!-- dots -->
             <div class="flex space-x-1.5 sm:space-x-2 shrink-0">
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-400 rounded-full border border-red-500"></div>
                 <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-yellow-400 rounded-full border border-yellow-500"></div>
@@ -97,112 +94,112 @@
 
             <div class="w-8 sm:w-16"></div>
         </div>
-    </div>
 
-    <!-- CONTENT CARD -->
-    <!-- This is still readable width -->
-    <div class="max-w-6xl mx-auto bg-white rounded-b-lg md:rounded-lg shadow-md border border-gray-200 border-t-0 md:border-t border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
+        <!-- CONTENT PANEL (BOTTOM SECTION) -->
+        <div class="bg-white border border-gray-200 border-t-0 rounded-b-lg shadow-md font-mono flex flex-col md:min-h-[60vh]">
 
-        <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
+            <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
 
-            <!-- Title -->
-            <h1 class="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-4 sm:mb-6">
-                Speed Test Server Search
-            </h1>
+                <!-- Title -->
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-4 sm:mb-6">
+                    Speed Test Server Search
+                </h1>
 
-            <!-- Search box -->
-            <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <div class="flex flex-col xs:flex-row xs:items-center gap-2">
-                    <label for="search-bar" class="text-gray-500 font-bold text-sm sm:text-md leading-none whitespace-nowrap">
-                        [search]$
-                    </label>
-                    <input
-                        type="text"
-                        id="search-bar"
-                        placeholder="e.g., 'United States', 'Sparklight', 'siouxcity'..."
-                        class="w-full bg-transparent border-none text-gray-900 p-0 focus:ring-0 text-sm sm:text-base placeholder-gray-400"
-                    >
-                </div>
-            </div>
-
-            <!-- Timestamp -->
-            <div class="mb-4 sm:mb-6 -mt-1 text-[10px] leading-tight sm:text-xs text-gray-500 text-right">
-                Last updated:
-                <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
-            </div>
-
-            <!-- Controls row -->
-            <div class="mb-4 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between">
-
-                <!-- Left: Show N entries -->
-                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-700">
-                    <label for="records-per-page" class="whitespace-nowrap">Show</label>
-                    <select
-                        id="records-per-page"
-                        class="w-20 px-2 py-1 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-xs sm:text-sm"
-                    >
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100" selected>100</option>
-                        <option value="250">250</option>
-                    </select>
-                    <span class="whitespace-nowrap">entries</span>
+                <!-- Search box -->
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div class="flex flex-col xs:flex-row xs:items-center gap-2">
+                        <label for="search-bar" class="text-gray-500 font-bold text-sm sm:text-md leading-none whitespace-nowrap">
+                            [search]$
+                        </label>
+                        <input
+                            type="text"
+                            id="search-bar"
+                            placeholder="e.g., 'United States', 'Sparklight', 'siouxcity'..."
+                            class="w-full bg-transparent border-none text-gray-900 p-0 focus:ring-0 text-sm sm:text-base placeholder-gray-400"
+                        >
+                    </div>
                 </div>
 
-                <!-- Right: Results info -->
-                <div
-                    id="results-info"
-                    class="text-xs sm:text-sm text-gray-700 text-left sm:text-right"
-                >
-                    Loading results...
+                <!-- Top row: timestamp + results info -->
+                <div class="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-4 mb-4 sm:mb-6">
+
+                    <!-- Left: controls (Show N entries) -->
+                    <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-700">
+                        <label for="records-per-page" class="whitespace-nowrap">Show</label>
+                        <select
+                            id="records-per-page"
+                            class="w-20 px-2 py-1 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-xs sm:text-sm"
+                        >
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100" selected>100</option>
+                            <option value="250">250</option>
+                        </select>
+                        <span class="whitespace-nowrap">entries</span>
+                    </div>
+
+                    <!-- Right block -->
+                    <div class="flex-1 flex flex-col items-start md:items-end text-[10px] leading-tight sm:text-xs text-gray-500">
+                        <div>
+                            Last updated:
+                            <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
+                        </div>
+
+                        <div
+                            id="results-info"
+                            class="text-[11px] sm:text-sm text-gray-700 mt-2 md:mt-1 text-left md:text-right"
+                        >
+                            Loading results...
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Table wrapper -->
-            <div class="overflow-x-auto table-scroll-container -mx-4 sm:mx-0 px-4 sm:px-0">
-                <table class="w-full">
-                    <thead class="hidden md:table-header-group bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Country
-                            </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Sponsor
-                            </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Location (Name)
-                            </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Host
-                            </th>
-                        </tr>
-                    </thead>
+                <!-- Table wrapper -->
+                <div class="overflow-x-auto table-scroll-container -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <table class="w-full text-[13px] sm:text-sm">
+                        <thead class="hidden md:table-header-group bg-gray-50 text-[11px] sm:text-xs">
+                            <tr>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">
+                                    Country
+                                </th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">
+                                    Sponsor
+                                </th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">
+                                    Location (Name)
+                                </th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">
+                                    Host
+                                </th>
+                            </tr>
+                        </thead>
 
-                    <tbody id="results-body" class="block md:table-row-group divide-y divide-gray-200">
-                        <tr>
-                            <td class="block md:table-cell px-4 sm:px-6 py-4 text-center text-sm text-gray-500" colspan="4">
-                                Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <tbody id="results-body" class="block md:table-row-group divide-y divide-gray-200">
+                            <tr>
+                                <td class="block md:table-cell px-4 sm:px-6 py-4 text-center text-sm text-gray-500" colspan="4">
+                                    Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Pagination -->
-            <div class="mt-6 flex items-center justify-center md:justify-end">
-                <nav aria-label="Pagination" class="w-full md:w-auto">
-                    <ul
-                        id="pagination-list"
-                        class="flex flex-wrap items-center justify-center md:justify-end gap-1 sm:gap-0 md:-space-x-px text-xs sm:text-sm"
-                    >
-                        <!-- Pagination buttons go here -->
-                    </ul>
-                </nav>
-            </div>
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-center md:justify-end">
+                    <nav aria-label="Pagination" class="w-full md:w-auto">
+                        <ul
+                            id="pagination-list"
+                            class="flex flex-wrap items-center justify-center md:justify-end gap-1 sm:gap-0 md:-space-x-px text-xs sm:text-sm"
+                        >
+                            <!-- Pagination buttons go here -->
+                        </ul>
+                    </nav>
+                </div>
 
-        </div> <!-- /inner content -->
-    </div> <!-- /card -->
+            </div> <!-- /inner padding -->
+        </div> <!-- /content panel -->
+    </div> <!-- /outer wrapper -->
 
     <script>
         // --- Element References ---
@@ -458,7 +455,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
 
-            // optimistic timestamp if Jenkins placeholder is still there
             if (
                 lastUpdatedElement &&
                 lastUpdatedElement.innerHTML.includes('<!-- LAST_UPDATED_JENKINS -->')
@@ -468,11 +464,10 @@
 
             fetch('speedtest_servers.json')
                 .then(response => {
-                    // Instead of throwing, handle gracefully
                     const lastModified = response.headers.get('Last-Modified');
                     if (
                         lastUpdatedElement &&
-                        lastUpdatedElement.innerHTML.includes('(loading...)')
+                        lastUpdatedElement.textContent.includes('(loading...)')
                     ) {
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
@@ -482,14 +477,12 @@
                     }
 
                     if (!response.ok) {
-                        // return empty data fallback
                         return [];
                     }
 
                     return response.json();
                 })
                 .then(data => {
-                    // If we got [], that's fine
                     allServerData = Array.isArray(data) ? data : [];
                     filteredServerData = allServerData;
 
@@ -505,7 +498,6 @@
                 .catch(err => {
                     console.error('Error loading server data:', err);
 
-                    // fallback state so UI still renders and doesn't look frozen
                     allServerData = [];
                     filteredServerData = [];
 
