@@ -4,30 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Test Server URL Data Search</title>
-    <!-- 1. Load Tailwind CSS -->
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Source Code Pro font for a "clean" terminal look -->
+
+    <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- UPDATED: Swapped to a clean monospace font -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
-    
+
     <style>
-        /* --- FIXED: Force vertical scrollbar to prevent page jump --- */
-        /* This ensures the page width is always consistent, */
-        /* even if one page's content is shorter than the screen. */
+        /* Keep scrollbar always visible to avoid horizontal layout shift */
         html {
             overflow-y: scroll;
         }
 
-        /* UPDATED: Use Source Code Pro as the default font */
         body {
             font-family: 'Source Code Pro', monospace;
-            /* UPDATED: Back to a light gray background */
-            background-color: #f3f4f6; /* Tailwind bg-gray-100 */
+            background-color: #f3f4f6; /* bg-gray-100 */
         }
 
-        /* Responsive table styles for the light theme */
+        /* Mobile "data-label: Country / Host / ..." before values */
         @media (max-width: 767px) {
             tbody td[data-label]::before {
                 content: attr(data-label);
@@ -37,19 +34,21 @@
                 padding-left: 1.5rem;
                 padding-right: 0.5rem;
                 text-align: left;
-                font-weight: 600; /* semibold */
+                font-weight: 600;
                 color: #4b5563; /* text-gray-600 */
+                font-size: 0.75rem; /* text-xs */
+                line-height: 1rem;  /* leading-tight */
             }
         }
 
-        /* Hover effect for desktop table rows */
+        /* Desktop row hover */
         @media (min-width: 768px) {
             tbody tr:hover {
                 background-color: #f9fafb; /* bg-gray-50 */
             }
         }
 
-        /* Styles for disabled pagination buttons */
+        /* Disabled pagination buttons */
         li.disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -59,71 +58,85 @@
             cursor: not-allowed;
         }
 
-        /* Placeholder style for search bar */
+        /* Search placeholder */
         #search-bar::placeholder {
             color: #9ca3af; /* text-gray-400 */
         }
 
-        /* --- NEW: Hide the horizontal scrollbar on the table container --- */
-        /* We keep the scroll functionality, but hide the visible bar */
+        /* Hide horizontal scrollbar bar chrome */
         .table-scroll-container::-webkit-scrollbar {
-            display: none; /* For Chrome, Safari, and Opera */
+            display: none;
         }
         .table-scroll-container {
-            -ms-overflow-style: none;  /* For Internet Explorer and Edge */
-            scrollbar-width: none;  /* For Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    
-    <!-- Main Container -->
-    <!-- UPDATED: White, rounded, shadow "window" theme -->
-    <!-- NEW (from me): added min-h-screen to keep height stable across short pages -->
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden font-mono min-h-screen">
-        
-        <!-- NEW: Light-mode Terminal Header Bar -->
-        <div class="h-10 bg-gray-100 flex items-center px-4 border-b border-gray-200">
-            <div class="flex space-x-2">
-                <div class="h-3.5 w-3.5 bg-red-400 rounded-full border border-red-500"></div>
-                <div class="h-3.5 w-3.5 bg-yellow-400 rounded-full border border-yellow-500"></div>
-                <div class="h-3.5 w-3.5 bg-green-400 rounded-full border border-green-500"></div>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <!-- Main container -->
+    <!-- NEW: responsive padding and height -->
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden font-mono md:min-h-screen flex flex-col">
+
+        <!-- Window chrome header -->
+        <div class="h-10 bg-gray-100 flex items-center px-3 sm:px-4 border-b border-gray-200 text-xs sm:text-sm">
+            <div class="flex space-x-1.5 sm:space-x-2 shrink-0">
+                <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-400 rounded-full border border-red-500"></div>
+                <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-yellow-400 rounded-full border border-yellow-500"></div>
+                <div class="h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-400 rounded-full border border-green-500"></div>
             </div>
-            <div class="flex-1 text-center text-sm text-gray-600">
-                user@speedtest: ~/data
+
+            <!-- shell path text -->
+            <div class="flex-1 text-center text-gray-600 truncate px-2">
+                <!-- On very small screens just show "speedtest" -->
+                <span class="sm:hidden">user@speedtest</span>
+                <span class="hidden sm:inline">user@speedtest: ~/data</span>
             </div>
-            <div class="w-16"></div> <!-- Spacer to balance the title -->
+
+            <div class="w-8 sm:w-16"></div>
         </div>
 
+        <!-- Content -->
+        <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
 
-        <!-- Content Area -->
-        <div class="p-6 md:p-8">
+            <!-- Title -->
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-4 sm:mb-6">
+                Speed Test Server Search
+            </h1>
 
-            <!-- Header -->
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">Speed Test Server Search</h1>
-
-            <!-- 2. The Search Bar (styled as a prompt) -->
-            <div class="mb-6 p-2 bg-gray-50 border border-gray-200 rounded-lg">
-                <!-- UPDATED: Prompt style for light mode -->
-                <div class="flex items-center">
-                    <label for="search-bar" class="text-gray-500 font-bold text-md mr-2">[search]$</label>
-                    <input type="text" id="search-bar" placeholder="e.g., 'United States', 'Sparklight', 'siouxcity'..."
-                           class="w-full bg-transparent border-none text-gray-900 p-0 focus:ring-0 text-md placeholder-gray-400">
+            <!-- Search box -->
+            <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <!-- Mobile: stack label above input for cramped screens -->
+                <div class="flex flex-col xs:flex-row xs:items-center gap-2">
+                    <label for="search-bar" class="text-gray-500 font-bold text-sm sm:text-md leading-none whitespace-nowrap">
+                        [search]$
+                    </label>
+                    <input
+                        type="text"
+                        id="search-bar"
+                        placeholder="e.g., 'United States', 'Sparklight', 'siouxcity'..."
+                        class="w-full bg-transparent border-none text-gray-900 p-0 focus:ring-0 text-sm sm:text-base placeholder-gray-400"
+                    >
                 </div>
             </div>
 
-            <!-- Last Updated Timestamp -->
-            <div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
-                Last updated: <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
+            <!-- Timestamp -->
+            <div class="mb-4 sm:mb-6 -mt-1 text-[10px] leading-tight sm:text-xs text-gray-500 text-right">
+                Last updated:
+                <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
             </div>
 
-            <!-- 4. Top Controls: Show X entries and Results Info -->
-            <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <!-- Left Side: Show X entries -->
-                <div class="flex items-center gap-2 text-sm text-gray-700 w-full sm:w-auto">
+            <!-- Controls row -->
+            <div class="mb-4 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between">
+
+                <!-- Left: Show N entries -->
+                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-700">
                     <label for="records-per-page" class="whitespace-nowrap">Show</label>
-                    <!-- UPDATED: Re-styled select for light theme -->
-                    <select id="records-per-page" class="w-20 px-2 py-1 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <select
+                        id="records-per-page"
+                        class="w-20 px-2 py-1 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 text-xs sm:text-sm"
+                    >
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
@@ -132,45 +145,62 @@
                     </select>
                     <span class="whitespace-nowrap">entries</span>
                 </div>
-                
-                <!-- Right Side: Results Info text -->
-                <div id="results-info" class="text-sm text-gray-700 text-center sm:text-right w-full sm:w-auto">Loading results...</div>
+
+                <!-- Right: Results info -->
+                <div
+                    id="results-info"
+                    class="text-xs sm:text-sm text-gray-700 text-left sm:text-right"
+                >
+                    Loading results...
+                </div>
             </div>
 
-            <!-- 5. The Data Table Container -->
-            <!-- NEW: Added 'table-scroll-container' class -->
-            <div class="overflow-x-auto table-scroll-container">
+            <!-- Table wrapper -->
+            <div class="overflow-x-auto table-scroll-container -mx-4 sm:mx-0 px-4 sm:px-0">
                 <table class="w-full">
-                    <!-- UPDATED: Re-styled thead for light theme -->
                     <thead class="hidden md:table-header-group bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Country</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Sponsor</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Location (Name)</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Host</th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Country
+                            </th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Sponsor
+                            </th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Location (Name)
+                            </th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Host
+                            </th>
                         </tr>
                     </thead>
-                    <!-- UPDATED: Re-styled tbody for light theme -->
+
                     <tbody id="results-body" class="block md:table-row-group divide-y divide-gray-200">
                         <tr>
-                            <td class="block md:table-cell px-6 py-4 text-center text-sm text-gray-500" colspan="4">Loading data...</td>
+                            <td class="block md:table-cell px-4 sm:px-6 py-4 text-center text-sm text-gray-500" colspan="4">
+                                Loading data...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- 6. Bottom Pagination Controls -->
+            <!-- Pagination -->
             <div class="mt-6 flex items-center justify-center md:justify-end">
                 <nav aria-label="Pagination" class="w-full md:w-auto">
-                    <ul id="pagination-list" class="flex items-center justify-center md:justify-end -space-x-px text-sm">
-                        <!-- Pagination items will be generated here -->
+                    <ul
+                        id="pagination-list"
+                        class="flex flex-wrap items-center justify-center md:justify-end gap-1 sm:gap-0 md:-space-x-px text-xs sm:text-sm"
+                    >
+                        <!-- JS will inject buttons -->
                     </ul>
                 </nav>
             </div>
-        </div> <!-- End Content Area -->
-    </div> <!-- End Main Container -->
 
-    <!-- 7. JavaScript for Data and Search -->
+        </div> <!-- /content -->
+    </div> <!-- /card -->
+
+    <!-- JS -->
     <script>
         // --- Element References ---
         const searchInput = document.getElementById('search-bar');
@@ -179,14 +209,14 @@
         const paginationList = document.getElementById('pagination-list');
         const recordsPerPageSelect = document.getElementById('records-per-page');
         
-        // --- State Variables ---
-        let allServerData = []; 
-        let filteredServerData = []; 
+        // --- State ---
+        let allServerData = [];
+        let filteredServerData = [];
         let currentPage = 1;
-        let recordsPerPage = 100; 
+        let recordsPerPage = 100;
 
         /**
-         * Debounce function
+         * Debounce helper
          */
         function debounce(func, delay = 250) {
             let timeoutId;
@@ -199,35 +229,60 @@
         }
 
         /**
-         * Renders the table rows for a *specific page* of data.
+         * Build table rows for current slice
          */
         function renderTable(data) {
-            tableBody.innerHTML = ''; // Clear the existing table body
+            tableBody.innerHTML = '';
 
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr>
-                    <td class="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="4">
-                        No results found.
-                    </td>
-                </tr>`;
+                tableBody.innerHTML = `
+                    <tr>
+                        <td class="block md:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center" colspan="4">
+                            No results found.
+                        </td>
+                    </tr>`;
                 return;
             }
 
             data.forEach(item => {
                 const row = document.createElement('tr');
-                // UPDATED: Back to light theme styles for mobile rows
-                row.className = 'block md:table-row mb-4 md:mb-0 border border-gray-200 md:border-b md:border-gray-200 rounded-lg md:rounded-none shadow-md md:shadow-none overflow-hidden md:overflow-auto';
+
+                // Card mode on mobile, flat row on desktop
+                row.className = [
+                    'block md:table-row mb-4 md:mb-0',
+                    'border border-gray-200 md:border-b md:border-gray-200',
+                    'rounded-lg md:rounded-none',
+                    'shadow-sm md:shadow-none',
+                    'overflow-hidden md:overflow-visible',
+                    'bg-white'
+                ].join(' ');
+
                 row.innerHTML = `
-                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-900" data-label="Country">
+                    <td
+                        class="block md:table-cell text-right md:text-left px-4 sm:px-6 py-3 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-[13px] leading-snug sm:text-sm text-gray-900"
+                        data-label="Country"
+                    >
                         ${item.country || ''}
                     </td>
-                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-900" data-label="Sponsor">
+
+                    <td
+                        class="block md:table-cell text-right md:text-left px-4 sm:px-6 py-3 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-[13px] leading-snug sm:text-sm text-gray-900"
+                        data-label="Sponsor"
+                    >
                         ${item.sponsor || ''}
                     </td>
-                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-500" data-label="Location">
+
+                    <td
+                        class="block md:table-cell text-right md:text-left px-4 sm:px-6 py-3 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-[12px] leading-snug sm:text-sm text-gray-600"
+                        data-label="Location"
+                    >
                         ${item.name || ''}
                     </td>
-                    <td class="block md:table-cell text-right md:text-left px-6 py-4 whitespace-normal break-words relative md:static pl-28 md:pl-6 text-sm text-gray-500" data-label="Host">
+
+                    <td
+                        class="block md:table-cell text-right md:text-left px-4 sm:px-6 py-3 whitespace-normal break-all relative md:static pl-28 md:pl-6 text-[12px] leading-snug sm:text-sm text-gray-600"
+                        data-label="Host"
+                    >
                         ${item.host || ''}
                     </td>
                 `;
@@ -236,10 +291,10 @@
         }
 
         /**
-         * Creates the array of page numbers and ellipses
+         * Page numbers with ellipsis
          */
         function getPaginationNumbers(totalPages, currentPage) {
-            const pagesToShow = 5; 
+            const pagesToShow = 5;
             const sideWidth = Math.floor(pagesToShow / 2);
             let start, end;
 
@@ -253,7 +308,6 @@
                 start = totalPages - pagesToShow + 1;
                 end = totalPages;
             } else {
-                // FIXED: side.width -> sideWidth
                 start = currentPage - sideWidth;
                 end = currentPage + sideWidth;
             }
@@ -265,7 +319,9 @@
                 result.push(1);
                 if (start > 2) result.push('...');
             }
+
             result.push(...pages);
+
             if (end < totalPages) {
                 if (end < totalPages - 1) result.push('...');
                 result.push(totalPages);
@@ -274,40 +330,56 @@
         }
 
         /**
-         * Updates the pagination controls
+         * Render pagination controls
+         * (Mobile-friendly buttons, wrap allowed)
          */
         function renderPaginationControls() {
-            paginationList.innerHTML = ''; 
+            paginationList.innerHTML = '';
+
             const totalResults = filteredServerData.length;
             let totalPages = Math.ceil(totalResults / recordsPerPage);
             if (totalPages === 0) totalPages = 1;
 
-            // 1. Create "Previous" button
+            // Prev
             const prevLi = document.createElement('li');
             const isDisabledPrev = currentPage === 1;
             if (isDisabledPrev) prevLi.classList.add('disabled');
-            // FIXED: Added type="button" to prevent scroll jump from implicit submit behavior
+
             prevLi.innerHTML = `
-                <button type="button" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
-                    Previous
+                <button
+                    type="button"
+                    class="flex items-center justify-center px-2.5 sm:px-3 h-9 sm:h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg sm:rounded-s-lg sm:rounded-e-none hover:bg-gray-100 hover:text-gray-700 ${isDisabledPrev ? 'cursor-not-allowed' : ''}"
+                >
+                    Prev
                 </button>
             `;
             if (!isDisabledPrev) {
                 prevLi.querySelector('button').addEventListener('click', () => goToPage(currentPage - 1));
             }
             paginationList.appendChild(prevLi);
- 
-            // 2. Create Page Number buttons
+
+            // Page numbers
             const pageNumbers = getPaginationNumbers(totalPages, currentPage);
             pageNumbers.forEach(page => {
                 const pageLi = document.createElement('li');
+
                 if (page === '...') {
-                    pageLi.innerHTML = `<span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">...</span>`;
+                    pageLi.innerHTML = `
+                        <span class="flex items-center justify-center px-2.5 sm:px-3 h-9 sm:h-8 leading-tight text-gray-500 bg-white border border-gray-300 text-center select-none">
+                            ...
+                        </span>
+                    `;
                 } else {
                     const isActive = page === currentPage;
-                    // FIXED: Corrected typo from type"button" to type="button"
                     pageLi.innerHTML = `
-                        <button type="button" class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
+                        <button
+                            type="button"
+                            class="flex items-center justify-center px-2.5 sm:px-3 h-9 sm:h-8 leading-tight border text-center ${
+                                isActive
+                                    ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700 font-semibold'
+                                    : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700'
+                            }"
+                        >
                             ${page}
                         </button>
                     `;
@@ -318,13 +390,16 @@
                 paginationList.appendChild(pageLi);
             });
 
-            // 3. Create "Next" button
+            // Next
             const nextLi = document.createElement('li');
             const isDisabledNext = currentPage === totalPages;
             if (isDisabledNext) nextLi.classList.add('disabled');
-            // FIXED: Added type="button" to prevent scroll jump from implicit submit behavior
+
             nextLi.innerHTML = `
-                <button type="button" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                <button
+                    type="button"
+                    class="flex items-center justify-center px-2.5 sm:px-3 h-9 sm:h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg sm:rounded-e-lg sm:rounded-s-none hover:bg-gray-100 hover:text-gray-700 ${isDisabledNext ? 'cursor-not-allowed' : ''}"
+                >
                     Next
                 </button>
             `;
@@ -335,12 +410,12 @@
         }
 
         /**
-         * Updates the "Showing X-Y of Z results" text
+         * "Showing X-Y of Z"
          */
         function updateResultsInfo() {
             const totalResults = filteredServerData.length;
             const startIndex = (currentPage - 1) * recordsPerPage;
-            
+
             const startNum = totalResults === 0 ? 0 : startIndex + 1;
             const endNum = Math.min(startIndex + recordsPerPage, totalResults);
 
@@ -348,21 +423,18 @@
         }
 
         /**
-         * Helper function to navigate pages
-         * (UPDATED BY ME: remember scroll position and restore after re-render)
+         * Page nav with scroll position memory (prevents jump)
          */
         function goToPage(page) {
             let totalPages = Math.ceil(filteredServerData.length / recordsPerPage);
             if (totalPages === 0) totalPages = 1;
 
             if (page >= 1 && page <= totalPages) {
-                // Save current scroll position before render blows away DOM
                 const prevScrollY = window.scrollY;
 
                 currentPage = page;
                 renderPage();
 
-                // Restore scroll position so viewport doesn't "jump"
                 window.scrollTo({
                     top: prevScrollY,
                     left: 0,
@@ -372,22 +444,21 @@
         }
 
         /**
-         * Slices the filtered data and renders the table and controls.
+         * Re-render current slice
          */
         function renderPage() {
             const startIndex = (currentPage - 1) * recordsPerPage;
             const endIndex = startIndex + recordsPerPage;
-            
+
             const dataToShow = filteredServerData.slice(startIndex, endIndex);
-            
+
             renderTable(dataToShow);
             renderPaginationControls();
             updateResultsInfo();
         }
 
-
         /**
-         * Filters all data based on the search term and renders the first page.
+         * Handle search filter
          */
         function handleSearch() {
             const searchTerm = searchInput.value.toLowerCase();
@@ -401,11 +472,13 @@
                 return countryMatch || sponsorMatch || hostMatch || nameMatch;
             });
 
-            currentPage = 1; // Reset to first page after a new search
-            renderPage(); // Re-render the page
+            currentPage = 1;
+            renderPage();
         }
 
-        // --- Event Listeners ---
+        /**
+         * Init
+         */
         document.addEventListener('DOMContentLoaded', () => {
             recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
 
@@ -421,7 +494,6 @@
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
-                            // FIXED: Removed stray "Next" word from here
                             lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
                         }
                     }
@@ -430,29 +502,29 @@
                 })
                 .then(data => {
                     allServerData = data;
-                    filteredServerData = data; 
-                    
-                    renderPage(); 
+                    filteredServerData = data;
+
+                    renderPage();
 
                     searchInput.addEventListener('input', debounce(handleSearch, 300));
                     recordsPerPageSelect.addEventListener('change', () => {
                         recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
-                        currentPage = 1; 
+                        currentPage = 1;
                         renderPage();
                     });
                 })
                 .catch(error => {
                     console.error('Error loading server data:', error);
                     resultsInfo.textContent = 'Error loading data.';
-                    tableBody.innerHTML = `<tr>
-                        <td class="block md:table-cell px-6 py-4 text-sm text-red-600 text-center" colspan="4">
-                            <strong>Error:</strong> Could not load 'speedtest_servers.json'.<br>
-                            Please make sure the file exists and is valid JSON.
-                        </td>
-                    </tr>`;
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td class="block md:table-cell px-4 sm:px-6 py-4 text-sm text-red-600 text-center" colspan="4">
+                                <strong>Error:</strong> Could not load 'speedtest_servers.json'.<br>
+                                Please make sure the file exists and is valid JSON.
+                            </td>
+                        </tr>`;
                 });
         });
-
     </script>
 </body>
 </html>
