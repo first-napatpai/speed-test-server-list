@@ -262,54 +262,9 @@
             `;
             if (!isDisabledPrev) {
                 prevLi.querySelector('button').addEventListener('click', () => goToPage(currentPage - 1));
-_            }
-            paginationList.appendChild(prevLi);
-
-            // 2. Create Page Number buttons
-            const pageNumbers = getPaginationNumbers(totalPages, currentPage);
-            pageNumbers.forEach(page => {
-                const pageLi = document.createElement('li');
-                if (page === '...') {
-                    // UPDATED: Light theme styles
-                    pageLi.innerHTML = `<span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">...</span>`;
-                } else {
-                    const isActive = page === currentPage;
-                    // UPDATED: Light theme styles for active and inactive
-                    pageLi.innerHTML = `
-                        <button classf="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
-                            ${page}
-                        </button>
-                    `;
-                    if (!isActive) {
-                        pageLi.querySelector('button').addEventListener('click', () => goToPage(page));
-                    }
-                }
-                paginationList.appendChild(pageLi);
-            });
-
-            // 3. Create "Next" button
-            const nextLi = document.createElement('li');
-            const isDisabledNext = currentPage === totalPages;
-            if (isDisabledNext) nextLi.classList.add('disabled');
-            // UPDATED: Light theme styles
-            nextLi.innerHTML = `
-                <button class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
-                    Next
-                </button>
-            `;
-            if (!isDisabledNext) {
-                nextLi.querySelector('button').addEventListener('click', () => goToPage(currentPage + 1));
             }
-            paginationList.appendChild(nextLi);
-        }
-
-        /**
-         * Updates the "Showing X-Y of Z results" text
-         */
-        function updateResultsInfo() {
-            const totalResults = filteredServerData.length;
-            const startIndex = (currentPage - 1) * recordsPerPage;
-            
+            paginationList.appendChild(prevLi);
+ 
             const startNum = totalResults === 0 ? 0 : startIndex + 1;
             const endNum = Math.min(startIndex + recordsPerPage, totalResults);
 
@@ -379,15 +334,15 @@ _            }
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
-                            lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
-                        }
-                    }
-                    
-                    return response.json();
-                })
-                .then(data => {
-                    allServerData = data;
-                    filteredServerData = data; 
+                    const isActive = page === currentPage;
+                    // UPDATED: Light theme styles for active and inactive
+                    // FIXED: Corrected 'classf' to 'class'
+                    pageLi.innerHTML = `
+                        <button class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
+                            ${page}
+                        </button>
+                    `;
+                    if (!isActive) {
                     
                     renderPage(); 
 
@@ -414,3 +369,5 @@ _            }
     </script>
 </body>
 </html>
+
+
