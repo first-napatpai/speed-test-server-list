@@ -243,7 +243,6 @@
 
         /**
          * Updates the pagination controls
-         * FIXED: Reconstructed this function
          */
         function renderPaginationControls() {
             paginationList.innerHTML = ''; 
@@ -255,8 +254,9 @@
             const prevLi = document.createElement('li');
             const isDisabledPrev = currentPage === 1;
             if (isDisabledPrev) prevLi.classList.add('disabled');
+            // FIXED: Added type="button" to prevent scroll jump
             prevLi.innerHTML = `
-                <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                <button type="button" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
                     Previous
                 </button>
             `;
@@ -273,8 +273,9 @@
                     pageLi.innerHTML = `<span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">...</span>`;
                 } else {
                     const isActive = page === currentPage;
+                    // FIXED: Added type="button" to prevent scroll jump
                     pageLi.innerHTML = `
-                        <button class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
+                        <button type"button" class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
                             ${page}
                         </button>
                     `;
@@ -289,8 +290,9 @@
             const nextLi = document.createElement('li');
             const isDisabledNext = currentPage === totalPages;
             if (isDisabledNext) nextLi.classList.add('disabled');
+            // FIXED: Added type="button" to prevent scroll jump
             nextLi.innerHTML = `
-                <button class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                <button type="button" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
                     Next
                 </button>
             `;
@@ -302,11 +304,10 @@
 
         /**
          * Updates the "Showing X-Y of Z results" text
-         * FIXED: Reconstructed this function
          */
         function updateResultsInfo() {
             const totalResults = filteredServerData.length;
-            const startIndex = (currentPage - 1) * recordsPerPage; // This was missing
+            const startIndex = (currentPage - 1) * recordsPerPage;
             
             const startNum = totalResults === 0 ? 0 : startIndex + 1;
             const endNum = Math.min(startIndex + recordsPerPage, totalResults);
@@ -362,7 +363,6 @@
         }
 
         // --- Event Listeners ---
-        // FIXED: Reconstructed this function
         document.addEventListener('DOMContentLoaded', () => {
             recordsPerPage = parseInt(recordsPerPageSelect.value, 10);
 
@@ -378,8 +378,8 @@
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
-                            // This was the broken part. It's now fixed.
                             lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
+Next
                         }
                     }
                     
