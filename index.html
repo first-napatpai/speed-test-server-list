@@ -61,6 +61,16 @@
         #search-bar::placeholder {
             color: #9ca3af; /* text-gray-400 */
         }
+
+        /* --- NEW: Hide the horizontal scrollbar on the table container --- */
+        /* We keep the scroll functionality, but hide the visible bar */
+        .table-scroll-container::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
+        }
+        .table-scroll-container {
+            -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+            scrollbar-width: none;  /* For Firefox */
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -118,7 +128,9 @@
                 <!-- Right Side: Results Info text --><div id="results-info" class="text-sm text-gray-700 text-center sm:text-right w-full sm:w-auto">Loading results...</div>
             </div>
 
-            <!-- 5. The Data Table Container --><div class="overflow-x-auto">
+            <!-- 5. The Data Table Container -->
+            <!-- NEW: Added 'table-scroll-container' class -->
+            <div class="overflow-x-auto table-scroll-container">
                 <table class="w-full">
                     <!-- UPDATED: Re-styled thead for light theme -->
                     <thead class="hidden md:table-header-group bg-gray-50">
@@ -229,7 +241,7 @@
                 start = totalPages - pagesToShow + 1;
                 end = totalPages;
             } else {
-                start = currentPage - sideWidth;
+                start = currentPage - side.width;
                 end = currentPage + sideWidth;
             }
 
