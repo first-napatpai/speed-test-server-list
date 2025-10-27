@@ -273,9 +273,9 @@
                     pageLi.innerHTML = `<span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">...</span>`;
                 } else {
                     const isActive = page === currentPage;
-                    // FIXED: Added type="button" to prevent scroll jump
+                    // FIXED: Corrected typo from type"button" to type="button"
                     pageLi.innerHTML = `
-                        <button type"button" class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
+                        <button type="button" class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 border-blue-300 hover:bg-blue-100 hover:text-blue-700' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'}">
                             ${page}
                         </button>
                     `;
@@ -378,8 +378,8 @@
                         if (lastModified) {
                             lastUpdatedElement.textContent = new Date(lastModified).toLocaleString();
                         } else {
+                            // FIXED: Removed stray "Next" word from here
                             lastUpdatedElement.textContent = new Date().toLocaleString() + " (page loaded)";
-Next
                         }
                     }
                     
