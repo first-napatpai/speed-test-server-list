@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Test Server URL Data Search</title>
-    <!-- 1. Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Source Code Pro font for a "clean" terminal look --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- 1. Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Source Code Pro font for a "clean" terminal look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- UPDATED: Swapped to a clean monospace font -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
@@ -77,7 +79,8 @@
     
     <!-- Main Container -->
     <!-- UPDATED: White, rounded, shadow "window" theme -->
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden font-mono">
+    <!-- NEW (from me): added min-h-screen to keep height stable across short pages -->
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden font-mono min-h-screen">
         
         <!-- NEW: Light-mode Terminal Header Bar -->
         <div class="h-10 bg-gray-100 flex items-center px-4 border-b border-gray-200">
@@ -96,9 +99,11 @@
         <!-- Content Area -->
         <div class="p-6 md:p-8">
 
-            <!-- Header --><h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">Speed Test Server Search</h1>
+            <!-- Header -->
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">Speed Test Server Search</h1>
 
-            <!-- 2. The Search Bar (styled as a prompt) --><div class="mb-6 p-2 bg-gray-50 border border-gray-200 rounded-lg">
+            <!-- 2. The Search Bar (styled as a prompt) -->
+            <div class="mb-6 p-2 bg-gray-50 border border-gray-200 rounded-lg">
                 <!-- UPDATED: Prompt style for light mode -->
                 <div class="flex items-center">
                     <label for="search-bar" class="text-gray-500 font-bold text-md mr-2">[search]$</label>
@@ -107,12 +112,15 @@
                 </div>
             </div>
 
-            <!-- Last Updated Timestamp --><div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
+            <!-- Last Updated Timestamp -->
+            <div class="mb-6 -mt-2 text-xs text-gray-500 text-right">
                 Last updated: <span id="data-last-updated-timestamp"><!-- LAST_UPDATED_JENKINS --></span>
             </div>
 
-            <!-- 4. Top Controls: Show X entries and Results Info --><div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <!-- Left Side: Show X entries --><div class="flex items-center gap-2 text-sm text-gray-700 w-full sm:w-auto">
+            <!-- 4. Top Controls: Show X entries and Results Info -->
+            <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- Left Side: Show X entries -->
+                <div class="flex items-center gap-2 text-sm text-gray-700 w-full sm:w-auto">
                     <label for="records-per-page" class="whitespace-nowrap">Show</label>
                     <!-- UPDATED: Re-styled select for light theme -->
                     <select id="records-per-page" class="w-20 px-2 py-1 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
@@ -125,7 +133,8 @@
                     <span class="whitespace-nowrap">entries</span>
                 </div>
                 
-                <!-- Right Side: Results Info text --><div id="results-info" class="text-sm text-gray-700 text-center sm:text-right w-full sm:w-auto">Loading results...</div>
+                <!-- Right Side: Results Info text -->
+                <div id="results-info" class="text-sm text-gray-700 text-center sm:text-right w-full sm:w-auto">Loading results...</div>
             </div>
 
             <!-- 5. The Data Table Container -->
@@ -150,16 +159,19 @@
                 </table>
             </div>
 
-            <!-- 6. Bottom Pagination Controls --><div class="mt-6 flex items-center justify-center md:justify-end">
+            <!-- 6. Bottom Pagination Controls -->
+            <div class="mt-6 flex items-center justify-center md:justify-end">
                 <nav aria-label="Pagination" class="w-full md:w-auto">
                     <ul id="pagination-list" class="flex items-center justify-center md:justify-end -space-x-px text-sm">
-                        <!-- Pagination items will be generated here --></ul>
+                        <!-- Pagination items will be generated here -->
+                    </ul>
                 </nav>
             </div>
         </div> <!-- End Content Area -->
     </div> <!-- End Main Container -->
 
-    <!-- 7. JavaScript for Data and Search --><script>
+    <!-- 7. JavaScript for Data and Search -->
+    <script>
         // --- Element References ---
         const searchInput = document.getElementById('search-bar');
         const tableBody = document.getElementById('results-body');
@@ -241,7 +253,8 @@
                 start = totalPages - pagesToShow + 1;
                 end = totalPages;
             } else {
-                start = currentPage - side.width;
+                // FIXED: side.width -> sideWidth
+                start = currentPage - sideWidth;
                 end = currentPage + sideWidth;
             }
 
@@ -273,7 +286,7 @@
             const prevLi = document.createElement('li');
             const isDisabledPrev = currentPage === 1;
             if (isDisabledPrev) prevLi.classList.add('disabled');
-            // FIXED: Added type="button" to prevent scroll jump
+            // FIXED: Added type="button" to prevent scroll jump from implicit submit behavior
             prevLi.innerHTML = `
                 <button type="button" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
                     Previous
@@ -309,7 +322,7 @@
             const nextLi = document.createElement('li');
             const isDisabledNext = currentPage === totalPages;
             if (isDisabledNext) nextLi.classList.add('disabled');
-            // FIXED: Added type="button" to prevent scroll jump
+            // FIXED: Added type="button" to prevent scroll jump from implicit submit behavior
             nextLi.innerHTML = `
                 <button type="button" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
                     Next
@@ -336,14 +349,25 @@
 
         /**
          * Helper function to navigate pages
+         * (UPDATED BY ME: remember scroll position and restore after re-render)
          */
         function goToPage(page) {
             let totalPages = Math.ceil(filteredServerData.length / recordsPerPage);
             if (totalPages === 0) totalPages = 1;
 
             if (page >= 1 && page <= totalPages) {
+                // Save current scroll position before render blows away DOM
+                const prevScrollY = window.scrollY;
+
                 currentPage = page;
                 renderPage();
+
+                // Restore scroll position so viewport doesn't "jump"
+                window.scrollTo({
+                    top: prevScrollY,
+                    left: 0,
+                    behavior: "auto"
+                });
             }
         }
 
@@ -432,4 +456,3 @@
     </script>
 </body>
 </html>
-
